@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/DanielMedeiros/API-Rest/issues"
   },
-  "homepage": "https://github.com/DanielMedeiros/API-Rest#readme"
+  "homepage": "https://github.com/DanielMedeiros/API-Rest#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
