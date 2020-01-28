@@ -1,48 +1,54 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', (req, res, next)=>{
+
+// RETORNA TODOS OS PRODUTOS
+router.get('/', (req, res, next) => {
     res.status(200).send({
-        mensagens: 'Usando o GET dentro da rota de produtos'
+        mensagem: 'Retorna todos os produtos'
     });
 });
 
-router.post('/', (req,res,next)=>{
-    res.status(200).send({
-        mensagens: 'Usando o POST dentro da rota de produtos'
-    });
+// INSERE UM PRODUTO
+router.post('/', (req, res, next) => {
+    const produto = {
+        nome: req.body.nome,
+        preco: req.body.preco
+    };
+    res.status(201).send({
+        mensagem: 'Insere um produto',
+        produtoCriado: produto
+    })
 });
 
+// RETORNA OS DADOS DE UM PRODUTO
+router.get('/:id_produto', (req, res, next)=> {
+    const id = req.params.id_produto
 
-router.get('/:id_produto', (req, res, next)=>{
-    const id = req.params.id_produto;
-
-    if(id === 'especial'){
+    if (id === 'especial') {
         res.status(200).send({
-            mensagens: 'Parabéns.. você descobriu o ID especial!!',
+            mensagem: 'Você descobriu o ID especial',
             id: id
-    
         });
-    }else{
+    } else {
         res.status(200).send({
-            mensagens: 'Você pasou um ID.',
-            id: id
-    
+            mensagem: 'Você passou um ID'
         });
     }
-    
 });
 
-router.patch('/', (req,res,next)=>{
-    res.status(200).send({
-        mensagens: 'Usando o PATCH dentro da rota de produtos'
-    });
+// ALTERA UM PRODUTO
+router.patch('/', (req, res, next) => {
+    res.status(201).send({
+        mensagem: 'Produto alterado'
+    })
 });
 
-router.delete('/', (req,res,next)=>{
-    res.status(200).send({
-        mensagens: 'Usando o DELETE dentro da rota de produtos'
-    });
+// EXCLUI UM PRODUTO
+router.delete('/', (req, res, next) => {
+    res.status(201).send({
+        mensagem: 'Produto excluído'
+    })
 });
 
 module.exports = router;
