@@ -16,8 +16,8 @@ router.post('/', (req, res, next) => {
         quantidade: req.body.quantidade
     }
     res.status(201).send({
-        mensagem: 'O pedido foi criado',
-        pedidoCriado: pedido
+        mensagem: 'O pedido foi criado',        
+        pedidoCriado: pedido        
     })
 });
 
