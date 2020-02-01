@@ -1,7 +1,7 @@
 {
     "env":{
         "MYSQL_USER" : "root",
-        "MYSQL_PASSWORD" : "SuaSenha",
+        "MYSQL_PASSWORD" : "root@123",
         "MYSQL_DATABASE" : "vendas",
         "MYSQL_HOST" : "localhost",
         "MYSQL_PORT" : 3306

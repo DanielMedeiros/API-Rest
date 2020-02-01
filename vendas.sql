@@ -1,4 +1,5 @@
 -- criação do banco de dados
+CREATE DATABASE vendas;
 
 CREATE TABLE produtos (
     id_produto INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -14,8 +15,6 @@ CREATE TABLE pedidos (
     
 );
 
-
--- insert para ter elementos na tabela
 insert into produtos(nome, preco)values('Star Wars', 20.00);
 insert into produtos(nome, preco)values('Rambo V', 15.00);
 insert into produtos(nome, preco)values('Avangers', 35.00);
