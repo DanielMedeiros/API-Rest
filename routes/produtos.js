@@ -70,6 +70,7 @@ router.get('/', (req, res, next) => {
 
 // INSERE UM PRODUTO
 router.post('/', login.obrigatorio, upload.single('produto_imagem'), (req, res, next) => {
+    console.log('post..');
     console.log(req.file);
 
     mysql.getConnection((error, conn) => {
