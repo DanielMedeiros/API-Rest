@@ -1,13 +1,41 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('../mysql').pool;
+const multer = require('multer');
+const login = require('../middleware/login');
+
+
+//Storage para fazer upload de imagens
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, './uploads');
+    },
+    filename: function(req,file,cb){
+        cb(null, new Date().toISOString()+file.originalname);
+    }
+})
+
+const filefilter = (req, file, cb) => {
+    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
+        cb(null, true);        
+    }else{        
+        cb(null, false);
+    }
+}
+const upload = multer({
+    storage: storage,
+    limits:{
+        // limitado a 5 mega a foto
+        fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: filefilter
+});
+
+
 
 
 // RETORNA TODOS OS PRODUTOS
-router.get('/', (req, res, next) => {
-    // res.status(200).send({
-    //     mensagem: 'Retorna todos os produtos'
-    // });
+router.get('/', (req, res, next) => {    
 
     mysql.getConnection((error, conn) => { 
         if(error) {return res.status(500).send({ error: error})}
@@ -23,6 +51,7 @@ router.get('/', (req, res, next) => {
                             id_produto: prod.id_produto,
                             nome: prod.nome,
                             preco: prod.preco,
+                            imagem_produto: prod.imagem_produto,                          
                             resquest:{
                                 tipo: 'GET',
                                 descricao: 'Retorna os detelhes de um produto.',
@@ -40,18 +69,18 @@ router.get('/', (req, res, next) => {
 });
 
 // INSERE UM PRODUTO
-router.post('/', (req, res, next) => {
-    // const produto = {
-    //     nome: req.body.nome,
-    //     preco: req.body.preco
-    // };
-    
+router.post('/', login.obrigatorio, upload.single('produto_imagem'), (req, res, next) => {
+    console.log(req.file);
 
     mysql.getConnection((error, conn) => {
         if(error) {return res.status(500).send({ error: error})}
         conn.query(
-            'INSERT INTO produtos (nome,preco)VALUES(?,?)',
-            [req.body.nome, req.body.preco],
+            'INSERT INTO produtos (nome,preco,imagem_produto)VALUES(?,?,?)',
+            [ 
+                req.body.nome,
+                req.body.preco,
+                req.file.path
+            ],
             (error, result, fields) => {
                 conn.release();
                 if(error) {return res.status(500).send({ error: error})}
@@ -61,6 +90,7 @@ router.post('/', (req, res, next) => {
                         id_produto: result.id_produto,
                         nome: req.body.nome,
                         preco: req.body.preco,
+                        imagem_produto: req.file.path,
                         resquest:{
                             tipo: 'POST',
                             descricao: 'Insere um produto.',
@@ -68,26 +98,13 @@ router.post('/', (req, res, next) => {
                         }
                     }
                 }
-                // if(error){                    
-                //     return res.status(500).send({
-                //         error: error,
-                //         response: null
-                //     });                    
-                // }
-
-                // res.status(201).send({
-                //         mensagem: 'Produto inserido com sucesso!',                        
-                //         id_produto: result.insertId
-                // })
+             
                 return res.status(201).send({response});
             }
         )
     })
     
-    // res.status(201).send({
-    //     mensagem: 'Insere um produto',
-    //     produtoCriado: produto
-    // })
+   
 });
 
 // RETORNA OS DADOS DE UM PRODUTO
@@ -114,6 +131,7 @@ router.get('/:id_produto', (req, res, next)=> {
                         id_produto: result[0].id_produto,
                         nome: result[0].nome,
                         preco: result[0].preco,
+                        imagem_produto: result[0].imagem_produto,
                         resquest:{
                             tipo: 'GET',
                             descricao: 'Retorna todos os produtos.',
@@ -127,24 +145,12 @@ router.get('/:id_produto', (req, res, next)=> {
         )
     })
 
-    // if (id === 'especial') {
-    //     res.status(200).send({
-    //         mensagem: 'Você descobriu o ID especial',
-    //         id: id
-    //     });
-    // } else {
-    //     res.status(200).send({
-    //         mensagem: 'Você passou um ID'
-    //     });
-    // }
+   
 });
 
 // ALTERA UM PRODUTO
-router.patch('/', (req, res, next) => {
-    // res.status(201).send({
-    //     mensagem: 'Produto alterado'
-    // })
-
+router.patch('/', login.obrigatorio, (req, res, next) => {
+ 
     mysql.getConnection((error, conn) => {
         if(error) {return res.status(500).send({ error: error})}
         conn.query(
@@ -166,32 +172,17 @@ router.patch('/', (req, res, next) => {
                             
                         }
                     }
-                }
-
-                // if(error){                    
-                //     return res.status(500).send({
-                //         error: error,
-                //         response: null
-                //     });                    
-                // }
-
+                }               
 
                 return res.status(202).send({response})
                 
-                // return res.status(202).send({
-                //         mensagem: 'Produto alterado com sucesso!'
-                //         //id_produto: resultado.insertId
-                // })
             }
         )
     })
 });
 
 // EXCLUI UM PRODUTO
-router.delete('/', (req, res, next) => {
-    // res.status(201).send({
-    //     mensagem: 'Produto excluído'
-    // })
+router.delete('/', login.obrigatorio, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if(error) {return res.status(500).send({ error: error})}
@@ -211,19 +202,11 @@ router.delete('/', (req, res, next) => {
                             preco: 'Number'
                         }
                     
+                    }
                 }
-                }
-                // if(error){                    
-                //     return res.status(500).send({
-                //         error: error,
-                //         response: null
-                //     });                    
-                // }
+              
                 return res.status(202).send({response})
-                // return res.status(202).send({
-                //         mensagem: 'Produto removido com sucesso!'
-                //         //id_produto: resultado.insertId
-                // })
+            
             }
         )
     })
