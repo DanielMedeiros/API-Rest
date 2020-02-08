@@ -33,9 +33,9 @@ select * from usuarios;
 -- Adicionando coluna para imagem
 -- ALTER TABLE produtos ADD COLUMN imagem_produto VARCHAR(500);
 
---  ALTER TABLE usuarios ADD UNIQUE (email); 
---  ALTER TABLE usuarios MODIFY COLUMN email VARCHAR(100) NOT NULL;
---  ALTER TABLE usuarios MODIFY COLUMN senha VARCHAR(100) NOT NULL;
+-- ALTER TABLE usuarios ADD UNIQUE (email);
+-- ALTER TABLE usuarios MODIFY COLUMN email VARCHAR(100) NOT NULL;
+-- ALTER TABLE usuarios MODIFY COLUMN senha VARCHAR(100) NOT NULL;
 
 desc usuarios;
 
